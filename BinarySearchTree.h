@@ -3,7 +3,6 @@
 
 #include <memory>
 #include <iostream>
-#include <fstream>
 #include <functional>
 #include <exception>
 
@@ -34,21 +33,21 @@ private:
 
     data_t _maxElement(std::unique_ptr<Node>& node) {
         if (!node){
-            throw std::runtime_error("Container is empty.");
+            throw std::runtime_error("In maxElement function: Container is empty.");
         }
         return ( node->right == nullptr ? node->data : _maxElement(node->right) );
     }
 
     data_t _minElement(std::unique_ptr<Node>& node) {
         if (!node) {
-            throw std::runtime_error("Container is empty.");
+            throw std::runtime_error("In min element function: Container is empty.");
         }
         return ( node->left == nullptr ? node->data : _minElement(node->left) );
     }
 
     void _remove(const data_t& key, std::unique_ptr<Node>& node) {
         if (node == nullptr) {
-            throw std::invalid_argument("Value: " + std::to_string(key) + " not found");
+            throw std::invalid_argument("In remove function: value not found");
         }
         else if (key > node->data) {
             _remove(key, node->right);
@@ -88,7 +87,9 @@ private:
 
     void _clear(std::unique_ptr<Node>& node){
         if (!node) return;
-        node.reset();
+        _clear(node->left);
+        _clear(node->right);
+        node.reset(nullptr);
     }
 
     void _traverse(std::function<void(data_t)> action, std::unique_ptr<Node>& node) {
@@ -123,6 +124,7 @@ public:
     BinarySearchTree& operator =(const BinarySearchTree&) = delete;
 
     bool empty() const;
+    void clear();
     void insert(const data_t& key);
     void remove(const data_t& key);
     bool contains(const data_t& key);

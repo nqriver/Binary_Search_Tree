@@ -41,5 +41,11 @@ int main() {
     std::cout << std::endl;
     tree.print();
     std::cout << '\n' << tree.maxElement();
+
+    tree.clear();
+    tree.insert(2);
+    tree.print();
+    std::cout << std::boolalpha << tree.empty();
+    std::cout << std::boolalpha << tree.empty();
     return 0;
 }

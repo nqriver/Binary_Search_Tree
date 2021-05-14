@@ -50,3 +50,9 @@ BinarySearchTree<data_t>::BinarySearchTree(InputIterator first, InputIterator la
         ++first;
     }
 }
+
+template<typename data_t>
+void BinarySearchTree<data_t>::clear() {
+    _clear(_root);
+
+}
