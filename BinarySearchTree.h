@@ -5,6 +5,7 @@
 #include <iostream>
 #include <fstream>
 #include <functional>
+#include <exception>
 
 template <typename data_t>
 class BinarySearchTree {
@@ -17,7 +18,9 @@ private:
     };
 
     std::unique_ptr<Node> _root;
-    void _insert(const data_t& data, std::unique_ptr<Node>& node){
+
+
+    void _insert(const data_t& data, std::unique_ptr<Node>& node) {
         if (node == nullptr){
             node.reset( new Node{ data } );
         }
@@ -29,19 +32,23 @@ private:
         }
     }
 
-    data_t _maxElement(std::unique_ptr<Node>& node){
-        if (node && node->right == nullptr) return node->data;
-        else return _maxElement(node->right);
+    data_t _maxElement(std::unique_ptr<Node>& node) {
+        if (!node){
+            throw std::runtime_error("Container is empty.");
+        }
+        return ( node->right == nullptr ? node->data : _maxElement(node->right) );
     }
 
-    data_t _minElement(std::unique_ptr<Node>& node){
-        if (node && node->left == nullptr) return node->data;
-        else return _minElement(node->left);
+    data_t _minElement(std::unique_ptr<Node>& node) {
+        if (!node) {
+            throw std::runtime_error("Container is empty.");
+        }
+        return ( node->left == nullptr ? node->data : _minElement(node->left) );
     }
 
-    void _remove(const data_t& key, std::unique_ptr<Node>& node){
+    void _remove(const data_t& key, std::unique_ptr<Node>& node) {
         if (node == nullptr) {
-            return;
+            throw std::invalid_argument("Value: " + std::to_string(key) + " not found");
         }
         else if (key > node->data) {
             _remove(key, node->right);
@@ -50,7 +57,7 @@ private:
             _remove(key, node->left);
         }
         else {      //found node matching to key
-            if (node->left == nullptr && node->right == nullptr){
+            if (node->left == nullptr && node->right == nullptr) {
                 node.reset();
             }
             else if (node->left == nullptr){
@@ -69,7 +76,7 @@ private:
         }
     }
 
-    bool _contains(const data_t& key, std::unique_ptr<Node>& node){
+    bool _contains(const data_t& key, std::unique_ptr<Node>& node) {
         if (!node){
             return false;
         }
@@ -77,6 +84,11 @@ private:
             return true;
         }
         return ( key > node->data ? _contains(key, node->right) : _contains(key, node->left) );
+    }
+
+    void _clear(std::unique_ptr<Node>& node){
+        if (!node) return;
+        node.reset();
     }
 
     void _traverse(std::function<void(data_t)> action, std::unique_ptr<Node>& node) {
@@ -87,17 +99,12 @@ private:
         _traverse(action, node->right);
     }
 
-    void _print(std::ostream& out, const std::string& prefix, std::unique_ptr<Node>& node, bool isLeft)
-    {
-        if (node != nullptr)
-        {
+    void _print(std::ostream& out, const std::string& prefix, std::unique_ptr<Node>& node, bool isLeft) {
+        if (node != nullptr) {
             out << prefix;
-
             out << (isLeft ? "├──" : "└──" );
-
             // print the value of the node
             out << node->data << std::endl;
-
             // enter the next tree level - left and right branch
             _print(out, prefix + (isLeft ? "|   " : "    "), node->left, true);
             _print(out, prefix + (isLeft ? "|   " : "    "), node->right, false);
@@ -108,7 +115,11 @@ private:
 
 public:
     BinarySearchTree() = default;
-    BinarySearchTree(const BinarySearchTree &) = delete;
+
+    template<typename InputIterator>
+    BinarySearchTree(InputIterator first, InputIterator last);
+
+    BinarySearchTree(const BinarySearchTree&) = delete;
     BinarySearchTree& operator =(const BinarySearchTree&) = delete;
 
     bool empty() const;
@@ -118,8 +129,7 @@ public:
 
     void traverse(std::function<void(data_t)> action);
 
-    void print();
-    void printToFile(const std::string& name);
+    void print(std::ostream& out = std::cout);
 
     data_t maxElement();
     data_t minElement();

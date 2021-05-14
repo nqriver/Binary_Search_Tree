@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 #include "BinarySearchTree.h"
 #include <clocale>
 #include <ctime>
@@ -10,7 +11,17 @@ int main() {
     srand(time(nullptr));
 
 
-    BinarySearchTree<int> tree;
+    std::vector<int> vec { 1,23,4,5 };
+    BinarySearchTree<int> tree(vec.begin(), vec.end());
+    tree.print();
+
+    BinarySearchTree<float> treeFloat;
+    try {
+        treeFloat.maxElement();
+    }
+    catch (const std::exception& exc){
+        std::cerr << exc.what();
+    }
 
     for (int k{ 0 }; k < 20; ++k){
         auto randInt { std::rand()%100 };
@@ -19,7 +30,8 @@ int main() {
 
     tree.traverse([](const auto& elem) { std::cout << elem << '\t';} );
 
-    tree.printToFile("tree1.txt");
+    std::ofstream out{"tree1.txt"};
+    tree.print(out);
     std::cout << std::endl;
     tree.print();
     int val;
