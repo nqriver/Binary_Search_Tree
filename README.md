@@ -6,7 +6,7 @@ Node-based binary tree data structure which follows undermentioned properties:
 
 Read more details: 	[wiki](https://en.wikipedia.org/wiki/Binary_search_tree)
 
-##Usage
+## Usage
 Usage example:
 ```c++
     std::array<std::string, 5> arr {"Tom", "Rob", "Ann", "John", "Shaun"};
