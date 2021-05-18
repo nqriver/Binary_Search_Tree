@@ -123,6 +123,10 @@ public:
     BinarySearchTree(const BinarySearchTree&) = delete;
     BinarySearchTree& operator =(const BinarySearchTree&) = delete;
 
+    BinarySearchTree(BinarySearchTree&&) noexcept;
+    BinarySearchTree& operator =(BinarySearchTree&&) noexcept;
+
+
     bool empty() const;
     void clear();
     void insert(const data_t& key);

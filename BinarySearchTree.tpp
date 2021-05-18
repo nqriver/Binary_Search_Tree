@@ -2,6 +2,30 @@
 
 
 template<typename data_t>
+BinarySearchTree<data_t>::BinarySearchTree(BinarySearchTree &&otherBST) noexcept :
+    _root{ std::move(otherBST._root)}
+{
+}
+
+template<typename data_t>
+BinarySearchTree<data_t> &BinarySearchTree<data_t>::operator=(BinarySearchTree&& otherBST) noexcept {
+    if (&otherBST == this)
+        return *this;
+
+    _root = std::move(otherBST._root);
+    return *this;
+}
+
+template<typename data_t>
+template<typename InputIterator>
+BinarySearchTree<data_t>::BinarySearchTree(InputIterator first, InputIterator last) {
+    while(first != last){
+        insert( *first );
+        ++first;
+    }
+}
+
+template<typename data_t>
 void BinarySearchTree<data_t>::insert(const data_t &key) {
     _insert(key, _root);
 }
@@ -21,6 +45,7 @@ void BinarySearchTree<data_t>::traverse(std::function<void(data_t)> action) {
     _traverse(action, _root);
 }
 
+
 template<typename data_t>
 bool BinarySearchTree<data_t>::empty() const {
     return (_root == nullptr);
@@ -36,19 +61,9 @@ data_t BinarySearchTree<data_t>::minElement() {
     return _minElement(_root);
 }
 
-
 template<typename data_t>
 bool BinarySearchTree<data_t>::contains(const data_t& key) {
     return _contains(key, _root);
-}
-
-template<typename data_t>
-template<typename InputIterator>
-BinarySearchTree<data_t>::BinarySearchTree(InputIterator first, InputIterator last) {
-    while(first != last){
-        insert( *first );
-        ++first;
-    }
 }
 
 template<typename data_t>
