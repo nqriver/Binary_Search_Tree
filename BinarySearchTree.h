@@ -9,6 +9,31 @@
 template <typename data_t>
 class BinarySearchTree {
 
+public:
+    BinarySearchTree() = default;
+    template<typename InputIterator>
+    BinarySearchTree(InputIterator first, InputIterator last);
+
+    BinarySearchTree(const BinarySearchTree&) = delete;
+    BinarySearchTree& operator =(const BinarySearchTree&) = delete;
+
+    BinarySearchTree(BinarySearchTree&&) noexcept;
+    BinarySearchTree& operator =(BinarySearchTree&&) noexcept;
+
+
+    bool empty() const;
+    void clear();
+    void insert(const data_t& key);
+    void remove(const data_t& key);
+    bool contains(const data_t& key);
+
+    void traverse(std::function<void(data_t)> action);
+    void print(std::ostream& out = std::cout);
+
+    std::size_t depth();
+    data_t maxElement();
+    data_t minElement();
+
 private:
     struct Node{
         data_t data;
@@ -18,9 +43,9 @@ private:
 
     std::unique_ptr<Node> _root;
 
-
+//private helper functions
     void _insert(const data_t& data, std::unique_ptr<Node>& node) {
-        if (node == nullptr){
+        if (!node){
             node.reset( new Node{ data } );
         }
         else if (data > node->data){
@@ -46,7 +71,7 @@ private:
     }
 
     void _remove(const data_t& key, std::unique_ptr<Node>& node) {
-        if (node == nullptr) {
+        if (!node) {
             throw std::invalid_argument("In remove function: value not found");
         }
         else if (key > node->data) {
@@ -92,6 +117,13 @@ private:
         node.reset(nullptr);
     }
 
+    std::size_t _depth(std::unique_ptr<Node>& node) {
+        if (!node){
+            return 0;
+        }
+        return ( std::max(_depth(node->left), _depth(node->right)) + 1 );
+    }
+
     void _traverse(std::function<void(data_t)> action, std::unique_ptr<Node>& node) {
         if (node == nullptr)
             return;
@@ -111,34 +143,6 @@ private:
             _print(out, prefix + (isLeft ? "|   " : "    "), node->right, false);
         }
     }
-
-
-
-public:
-    BinarySearchTree() = default;
-
-    template<typename InputIterator>
-    BinarySearchTree(InputIterator first, InputIterator last);
-
-    BinarySearchTree(const BinarySearchTree&) = delete;
-    BinarySearchTree& operator =(const BinarySearchTree&) = delete;
-
-    BinarySearchTree(BinarySearchTree&&) noexcept;
-    BinarySearchTree& operator =(BinarySearchTree&&) noexcept;
-
-
-    bool empty() const;
-    void clear();
-    void insert(const data_t& key);
-    void remove(const data_t& key);
-    bool contains(const data_t& key);
-
-    void traverse(std::function<void(data_t)> action);
-
-    void print(std::ostream& out = std::cout);
-
-    data_t maxElement();
-    data_t minElement();
 };
 
 #include "BinarySearchTree.tpp"

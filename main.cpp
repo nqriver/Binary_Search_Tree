@@ -14,6 +14,7 @@ int main() {
     }
 
     std::ofstream graphics_tree{ "tree.txt" };
+    graphics_tree << "MAX DEPTH: " << tree.depth() << "\n\n";
     tree.print(graphics_tree);
     return 0;
 }

@@ -3,7 +3,7 @@
 
 template<typename data_t>
 BinarySearchTree<data_t>::BinarySearchTree(BinarySearchTree &&otherBST) noexcept :
-    _root{ std::move(otherBST._root)}
+    _root{ std::move(otherBST._root) }
 {
 }
 
@@ -70,4 +70,9 @@ template<typename data_t>
 void BinarySearchTree<data_t>::clear() {
     _clear(_root);
 
+}
+
+template<typename data_t>
+std::size_t BinarySearchTree<data_t>::depth() {
+    return _depth(_root);
 }
