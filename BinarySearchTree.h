@@ -24,7 +24,9 @@ public:
     bool empty() const;
     void clear();
     void insert(const data_t& key);
+//    void insert(data_t&& key);
     void remove(const data_t& key);
+    void remove(const data_t&& key);
     bool contains(const data_t& key);
 
     void traverse(std::function<void(data_t)> action);
@@ -47,6 +49,7 @@ private:
     void _insert(const data_t& data, std::unique_ptr<Node>& node) {
         if (!node){
             node.reset( new Node{ data } );
+            return;
         }
         else if (data > node->data){
             _insert(data, node->right);
@@ -56,18 +59,14 @@ private:
         }
     }
 
-    data_t _maxElement(std::unique_ptr<Node>& node) {
+    void _insert(const data_t&& data, std::unique_ptr<Node>& node) {
         if (!node){
-            throw std::runtime_error("In maxElement function: Container is empty.");
+            node.reset( new Node{ data } );
+            return;
         }
-        return ( node->right == nullptr ? node->data : _maxElement(node->right) );
-    }
-
-    data_t _minElement(std::unique_ptr<Node>& node) {
-        if (!node) {
-            throw std::runtime_error("In min element function: Container is empty.");
-        }
-        return ( node->left == nullptr ? node->data : _minElement(node->left) );
+        _insert( std::forward<data_t>(data),
+                data > node->data ? node->right : node->left
+                );
     }
 
     void _remove(const data_t& key, std::unique_ptr<Node>& node) {
@@ -98,6 +97,50 @@ private:
                 _remove(min, node->right);
             }
         }
+    }
+
+    void _remove(const data_t&& key, std::unique_ptr<Node>& node) {
+        if (!node) {
+            throw std::invalid_argument("In remove function: value not found");
+        }
+        else if (key > node->data) {
+            _remove(std::forward<data_t>(key), node->right);
+        }
+        else if (key < node->data) {
+            _remove(std::forward<data_t>(key), node->left);
+        }
+        else {      //found node matching to key
+            if (node->left == nullptr && node->right == nullptr) {
+                node.reset();
+            }
+            else if (node->left == nullptr){
+                auto& temp { node->right };
+                node.reset( temp.release() );
+            }
+            else if (node->right == nullptr){
+                auto& temp { node->left };
+                node.reset( temp.release() );
+            }
+            else {
+                auto min { _minElement(node->right) };
+                node->data = min;
+                _remove(std::forward<data_t>(min), node->right);
+            }
+        }
+    }
+
+    data_t _maxElement(std::unique_ptr<Node>& node) {
+        if (!node){
+            throw std::runtime_error("In maxElement function: Container is empty.");
+        }
+        return ( node->right == nullptr ? node->data : _maxElement(node->right) );
+    }
+
+    data_t _minElement(std::unique_ptr<Node>& node) {
+        if (!node) {
+            throw std::runtime_error("In min element function: Container is empty.");
+        }
+        return ( node->left == nullptr ? node->data : _minElement(node->left) );
     }
 
     bool _contains(const data_t& key, std::unique_ptr<Node>& node) {
