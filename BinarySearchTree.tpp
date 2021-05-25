@@ -26,14 +26,14 @@ BinarySearchTree<data_t>::BinarySearchTree(InputIterator first, InputIterator la
 }
 
 template<typename data_t>
-void BinarySearchTree<data_t>::insert(const data_t &key) {
+void BinarySearchTree<data_t>::insert(const data_t& key) {
     _insert(key, _root);
 }
 
-//template<typename data_t>
-//void BinarySearchTree<data_t>::insert(data_t &&key) {
-//    _insert(std::forward<data_t>(key), _root);
-//}
+template<typename data_t>
+void BinarySearchTree<data_t>::insert(data_t&& key) {
+    _insert(std::forward<data_t>(key), _root);
+}
 
 template<typename data_t>
 void BinarySearchTree<data_t>::remove(const data_t& key) {
@@ -41,7 +41,7 @@ void BinarySearchTree<data_t>::remove(const data_t& key) {
 }
 
 template<typename data_t>
-void BinarySearchTree<data_t>::remove(const data_t &&key) {
+void BinarySearchTree<data_t>::remove(data_t&& key) {
     _remove(std::forward<data_t>(key), _root);
 }
 

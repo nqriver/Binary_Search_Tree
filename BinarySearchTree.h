@@ -24,9 +24,9 @@ public:
     bool empty() const;
     void clear();
     void insert(const data_t& key);
-//    void insert(data_t&& key);
+    void insert(data_t&& key);
     void remove(const data_t& key);
-    void remove(const data_t&& key);
+    void remove(data_t&& key);
     bool contains(const data_t& key);
 
     void traverse(std::function<void(data_t)> action);
@@ -59,14 +59,17 @@ private:
         }
     }
 
-    void _insert(const data_t&& data, std::unique_ptr<Node>& node) {
+    void _insert(data_t&& data, std::unique_ptr<Node>& node) {
         if (!node){
             node.reset( new Node{ data } );
             return;
         }
-        _insert( std::forward<data_t>(data),
-                data > node->data ? node->right : node->left
-                );
+        else if (data > node->data){
+            _insert(std::forward<data_t>(data), node->right);
+        }
+        else if (data < node->data){
+            _insert(std::forward<data_t>(data), node->left);
+        }
     }
 
     void _remove(const data_t& key, std::unique_ptr<Node>& node) {
@@ -99,7 +102,7 @@ private:
         }
     }
 
-    void _remove(const data_t&& key, std::unique_ptr<Node>& node) {
+    void _remove(data_t&& key, std::unique_ptr<Node>& node) {
         if (!node) {
             throw std::invalid_argument("In remove function: value not found");
         }
@@ -154,11 +157,8 @@ private:
     }
 
     void _clear(std::unique_ptr<Node>& node){
-        if (!node) return;
-        _clear(node->left);
-        _clear(node->right);
-        node.reset(nullptr);
-    }
+            node->reset(nullptr);
+        }
 
     std::size_t _depth(std::unique_ptr<Node>& node) {
         if (!node){
